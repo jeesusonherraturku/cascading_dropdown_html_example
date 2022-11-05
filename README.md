@@ -1,1 +1,0 @@
-# jeesusonherraturku.github.io

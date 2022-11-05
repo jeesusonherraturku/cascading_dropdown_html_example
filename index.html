@@ -1,104 +1,215 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cascading dropdown read .txt files from server Javascript example. Bible chapters as an example. </title>
+		<style>
+			pre {
+			font-family: arial; 
+			font-size: 16px;
+			overflow-x: auto;
+			white-space: pre-wrap;
+			white-space: -moz-pre-wrap;
+			white-space: -pre-wrap;
+			white-space: -o-pre-wrap;
+			word-wrap: break-word;
+			}
+		</style>
 		<script>
+			
 			var versionObject = {
-				"1938": {
-					"1. Mooses": ["1", "2", "3"],
-					"2. Mooses": ["1", "2"],
-					"3. Mooses": ["1"]    
+				"1933_38": {
+					"1Mooses": ["1", "2", "3"],
+					"2Mooses": ["1", "2"],
+					"3Mooses": ["1"]    
 				},
 				"KJV": {
 					"Genesis": ["1", "2", "3", "4", "5"],
 					"Exodus": ["1", "2", "3", "4"]
 				}
-			}
+			};
+			// global variables that can be used in functions
+			var mylistVersion = "";
+			var mylistBook = "";
+			var mylistChapter = "";
+			var maxChapters = 0;
+			
 			window.onload = function() {
 				var versionSel = document.getElementById("version");
 				var bookSel = document.getElementById("book");
 				var chapterSel = document.getElementById("chapter");
 				
+				
 				for (var x in versionObject) {
 					versionSel.options[versionSel.options.length] = new Option(x, x);
 				}
+				//when the version is changed
 				versionSel.onchange = function() {
-					    //empty Chapters- and Books- dropdowns
-					    bookSel.length = 1;
-					    chapterSel.length = 1;
-					var mylist_version = document.getElementById("version");  
-					document.getElementById("choice_version").value = mylist_version.options[mylist_version.selectedIndex].text;
+					//empty chapters and books dropdowns
+					bookSel.length = 1;
+					chapterSel.length = 1;
+					mylistVersion = document.getElementById("version");  
+					document.getElementById("choiceVersion").value = mylistVersion.options[mylistVersion.selectedIndex].text;
 					//display correct values
 					for (var y in versionObject[this.value]) {
 						bookSel.options[bookSel.options.length] = new Option(y, y);
 					}
-				}
+				};
+				//when the book is changed
 				bookSel.onchange = function() {
-					    //empty Chapters dropdown
-					    chapterSel.length = 1;
-					var mylist_book = document.getElementById("book");  
-					document.getElementById("choice_book").value = mylist_book.options[mylist_book.selectedIndex].text;
+					//empty Chapters dropdown
+					chapterSel.length = 1;
+					mylistBook = document.getElementById("book");  
+					document.getElementById("choiceBook").value = mylistBook.options[mylistBook.selectedIndex].text;
 					//display correct values
-					var z = versionObject[versionSel.value][this.value];
-					for (var i = 0; i < z.length; i++) {
-						chapterSel.options[chapterSel.options.length] = new Option(z[i], z[i]);
+					if ( mylistBook.options[mylistBook.selectedIndex].text === "Choose book"){
 					}
-				}
+					else{
+						var z = versionObject[versionSel.value][this.value];
+						for (var i = 0; i < z.length; i++) {
+							chapterSel.options[chapterSel.options.length] = new Option(z[i], z[i]);
+						}
+					}
+				};
+				//when the chapter is changed
 				chapterSel.onchange = function() {
-					var mylist_chapter = document.getElementById("chapter");  
-					document.getElementById("choice_chapter").value = mylist_chapter.options[mylist_chapter.selectedIndex].text;
-					
-				}
+					mylistChapter = document.getElementById("chapter");  
+					document.getElementById("choiceChapter").value = mylistChapter.options[mylistChapter.selectedIndex].text;
+					console.log(" ");
+					console.log(mylistVersion.options[mylistVersion.selectedIndex].text, mylistBook.options[mylistBook.selectedIndex].text, mylistChapter.options[mylistChapter.selectedIndex].text);
+					console.log("Test output");
+					var fileName = "";
+					var folderName = "";
+					fileName = mylistBook.options[mylistBook.selectedIndex].text + mylistChapter.options[mylistChapter.selectedIndex].text + ".txt";
+					folderName = mylistVersion.options[mylistVersion.selectedIndex].text + '/' + mylistBook.options[mylistBook.selectedIndex].text;
+					console.log("Folder name is " + folderName);
+					console.log("File name is " + fileName);
+					var pathName = folderName + '/' + fileName;
+					console.log("Path name is " + pathName);
+					console.log("Selected chapter index " + mylistChapter.selectedIndex);
+					console.log("Max chapters " + (chapterSel.options.length - 1));
+					maxChapters = chapterSel.options.length - 1;
+					//fetch('test2.txt') // reading file locally when testing
+					if (mylistChapter.options[mylistChapter.selectedIndex].text === "Choose chapter"){
+						//don't do anything if user has not selected chapter
+					}
+					else{
+						// read from the server the filename from correct folder. Does not work on local machine unless you have server running
+						fetch(pathName)
+						.then(response => response.text()) 
+						.then(textString => {
+							document.getElementById('previewText').textContent = textString;
+						});
+					}
+				};
 				
+				
+				// when the chooseFile button is pressed, read file locally
 				document
-				.getElementById('file_choice')
+				.getElementById('fileChoice')
 				.addEventListener(
 				'change',
 				function () {
 					var fr = new FileReader();
 					fr.onload = function () {
-						document.getElementById('file_contents').textContent = this.result;
+						document.getElementById('previewText').textContent = this.result;
 					};
 					fr.readAsText(this.files[0]);
 				}
 				);
-				
-				
+			};
 			
-			
+			// called when user presses previous chapter link
+			function previousChapter(){
+				// Only call previous if selected chapter is > 1 (means higher than empty or first chapter)
+				if (mylistChapter.selectedIndex > 1){
+					console.log(" ");
+					console.log("Clicked previous chapter link");
+					var fileNamePrevious = "";
+					var folderNamePrevious = "";
+					fileNamePrevious = mylistBook.options[mylistBook.selectedIndex].text + mylistChapter.options[mylistChapter.selectedIndex-1].text + ".txt";
+					folderNamePrevious = mylistVersion.options[mylistVersion.selectedIndex].text + '/' + mylistBook.options[mylistBook.selectedIndex].text;
+					console.log("Folder name for previous file " + folderNamePrevious);
+					console.log("File name for previous file " + fileNamePrevious);
+					var pathNamePrevious = folderNamePrevious + '/' + fileNamePrevious;
+					console.log("Path name for previous file " + pathNamePrevious);
+					console.log("Previous chapter index " + (mylistChapter.selectedIndex-1));
+					//decrease index by one when pressing previous
+					mylistChapter.selectedIndex = mylistChapter.selectedIndex - 1;
+					// read previous file from server
+					fetch(pathNamePrevious)
+					.then(response => response.text()) 
+					.then(textString => {
+						document.getElementById('previewText').textContent = textString;
+					});
+				}
+			}
+			// function called when next chapter is pressed
+			function nextChapter(){
+				// Only call next if selected chapter is less than max and higher than empty
+				if (mylistChapter.selectedIndex < maxChapters &&
+				mylistChapter.selectedIndex > 0){
+					console.log(" ");
+					console.log("Clicked next chapter link");
+					var fileNameNext = "";
+					var folderNameNext = "";
+					fileNameNext = mylistBook.options[mylistBook.selectedIndex].text + mylistChapter.options[mylistChapter.selectedIndex+1].text + ".txt";
+					folderNameNext = mylistVersion.options[mylistVersion.selectedIndex].text + '/' + mylistBook.options[mylistBook.selectedIndex].text;
+					console.log("Folder name for next file " + folderNameNext);
+					console.log("File name for next file " + fileNameNext);
+					var pathNameNext = folderNameNext + '/' + fileNameNext;
+					console.log("Path name for next file " + pathNameNext);
+					console.log("Next chapter index " + (mylistChapter.selectedIndex+1));
+					// increase selected chapter index by 1
+					mylistChapter.selectedIndex = mylistChapter.selectedIndex + 1;
+					// read next file from server 
+					fetch(pathNameNext)
+					.then(response => response.text()) 
+					.then(textString => {
+						document.getElementById('previewText').textContent = textString;
+					});
+				}
+			}
 		</script>
 	</head>   
 	<body>
 		
-		<h1>Example Bible 1933/38 Finnish and KJV</h1>
+		<h1>Cascading dropdown read .txt files from server Javascript example. Example Bible 1933/38 Finnish and KJV</h1>
 		
-		<form name="form1" id="form1" action="">
+		<form name="form1" id="form1" >
 			Versions: <select name="version" id="version">
 				<option value="" selected="selected">Choose version</option>
 			</select>
 			<br><br>
 			Books: <select name="book" id="book">
-				<option value="" selected="selected">Please select version first</option>
+				<option value="" selected="selected">Choose book</option>
 			</select>
 			<br><br>
 			Chapters: <select name="chapter" id="chapter">
-				<option value="" selected="selected">Please select book first</option>
+				<option value="" selected="selected">Choose chapter</option>
 			</select>
-			<p> You chose:   
-				<input type = "text" id = "choice_version" size = "20" </p>
-				<input type = "text" id = "choice_book" size = "20" </p>  
-				<input type = "text" id = "choice_chapter" size = "20" </p>  
-				<br><br>
-				
-				<input type="file" id="file_choice" />
-				<br><br>
-				
-				<pre id="file_contents" wrap="hard" style="font-size: 18px; font-family: arial"> </pre>
-				
-				
-				<br />
-				<br><br>  
-			</form>
+			<p> You chose:   </p>
+			<input type = "text" id = "choiceVersion" size = "20" >
+			<input type = "text" id = "choiceBook" size = "20"  >
+			<input type = "text" id = "choiceChapter" size = "20" >  
+			<br><br>
 			
-		</body>
-	</html>
+			<input type="file" id="fileChoice" >
+			<br><br>
+			
+			<ul>
+				<li style="display:inline-block;">
+					<a href="javascript:previousChapter()" id="previousLink">Previous Chapter</a>
+				</li>
+				<li style="display:inline-block;">
+					<a href="javascript:nextChapter()" id="nextLink">Next Chapter</a>
+				</li>
+			</ul>
+			
+			<pre id="previewText" ></pre>
+			<br>
+			
+		</form>
+		
+	</body>
+</html>

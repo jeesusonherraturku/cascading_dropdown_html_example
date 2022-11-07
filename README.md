@@ -1,5 +1,5 @@
 # cascading_dropdown_html_example
-Cascading dropdown HTML example and reading .txt files from server with Javascript. 
+Cascading dropdown menu HTML example and reading .txt files from server with Javascript. 
 
 This should work out of the box and contains test files. 
 

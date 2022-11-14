@@ -1,6 +1,10 @@
 # cascading_dropdown_html_example
 Cascading dropdown menu HTML example and reading .txt files from server with Javascript. 
 
+Try it out
+
+https://jeesusonherraturku.github.io/test_javascript_txt/
+
 This should work out of the box and contains test files. 
 
 Remember that the files need to be on the server. 

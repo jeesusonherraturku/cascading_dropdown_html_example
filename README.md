@@ -1,4 +1,4 @@
-# cascading_dropdown_html_example
+.No# cascading_dropdown_html_example
 Cascading dropdown menu HTML example and reading .txt files from server with Javascript. 
 
 Try it out:
@@ -17,7 +17,8 @@ https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_t
 
 
 
-I also have another page to try it out, that is for specific purpose(reading Bible) that I'm slowly adding more chapters.
+I also have another page to try it out, that is for specific purpose(reading Bible) that I'm slowly adding more chapter.
+It also has updated JavaScript code.
 
 Try:
 
